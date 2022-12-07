@@ -70,7 +70,7 @@ public class InnReservations {
             System.out.print("Enter a reservation code: ");
             String code = scanner.nextLine();
 
-            String updateSql = "DELETE FROM lnguy228.lab7_reservations WHERE CODE = ?";
+            String updateSql = "DELETE FROM yehlaing.lab7_reservations WHERE CODE = ?";
 
             conn.setAutoCommit(false);
 
@@ -97,7 +97,7 @@ public class InnReservations {
     }
 
 
-    private void R5() throws SQLException {
+    private void R3() throws SQLException {
 
         System.out.println("Detailed Reservation Information");
         try (Connection conn = DriverManager.getConnection(
@@ -125,7 +125,7 @@ public class InnReservations {
             System.out.print("Enter a reservation code (or press Enter to leave the field blank): ");
             String code = scanner.nextLine();
 
-            String updateSql = "DELETE FROM lnguy228.lab7_reservations WHERE CODE = ?";
+            String updateSql = "DELETE FROM yehlaing.lab7_reservations WHERE CODE = ?";
 
             conn.setAutoCommit(false);
 
@@ -179,65 +179,65 @@ public class InnReservations {
                                 "COALESCE(R4.Revenue, 0) + COALESCE(R5.Revenue, 0) + COALESCE(R6.Revenue, 0) +  "+
                                 "COALESCE(R7.Revenue, 0) + COALESCE(R8.Revenue, 0) + COALESCE(R9.Revenue, 0) +  "+
                                 "COALESCE(R10.Revenue, 0) + COALESCE(R11.Revenue, 0) + COALESCE(R12.Revenue, 0),0) AS TotalRevenue "+
-                "FROM lnguy228.lab7_rooms AS R "+
+                "FROM yehlaing.lab7_rooms AS R "+
                 "LEFT OUTER JOIN "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
-                                "FROM lnguy228.lab7_reservations "+
+                                "FROM yehlaing.lab7_reservations "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=1 "+
                                 "GROUP BY Month, room) AS R1 ON R1.room = R.roomcode "+
                 "LEFT OUTER JOIN "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
-                                "FROM lnguy228.lab7_reservations "+
+                                "FROM yehlaing.lab7_reservations "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=2 "+
                                 "GROUP BY Month, room) AS R2 ON R2.room = R.roomcode "+
                 "LEFT OUTER JOIN "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
-                                "FROM lnguy228.lab7_reservations "+
+                                "FROM yehlaing.lab7_reservations "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=3 "+
                                 "GROUP BY Month, room) AS R3 ON R3.room = R.roomcode "+
                 "LEFT OUTER JOIN "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
-                                "FROM lnguy228.lab7_reservations "+
+                                "FROM yehlaing.lab7_reservations "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=4 "+
                                 "GROUP BY Month, room) AS R4 ON R4.room = R.roomcode "+
                 "LEFT OUTER JOIN "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
-                                "FROM lnguy228.lab7_reservations "+
+                                "FROM yehlaing.lab7_reservations "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=5 "+
                                 "GROUP BY Month, room) AS R5 ON R5.room = R.roomcode "+
                 "LEFT OUTER JOIN "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=6  "+
                                 "GROUP BY Month, room) AS R6 ON R6.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=7 " +
                                 "GROUP BY Month, room) AS R7 ON R7.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=8  "+
                                 "GROUP BY Month, room) AS R8 ON R8.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=9  "+
                                 "GROUP BY Month, room) AS R9 ON R9.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=10  "+
                                 "GROUP BY Month, room) AS R10 ON R10.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=11  "+
                                 "GROUP BY Month, room) AS R11 ON R11.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=12  "+
                                 "GROUP BY Month, room) AS R12 ON R12.room = R.roomcode  "+
                 "UNION  "+
@@ -258,65 +258,65 @@ public class InnReservations {
                                 "COALESCE(sum(R4.Revenue),0) + COALESCE(sum(R5.Revenue),0) + COALESCE(sum(R6.Revenue),0) + "+
                                 "COALESCE(sum(R7.Revenue),0) + COALESCE(sum(R8.Revenue),0) + COALESCE(sum(R9.Revenue),0) + "+
                                 "COALESCE(sum(R10.Revenue),0) + COALESCE(sum(R11.Revenue),0) + COALESCE(sum(R12.Revenue),0),0) AS TotalRevenue "+
-                "FROM lnguy228.lab7_rooms AS R "+
+                "FROM yehlaing.lab7_rooms AS R "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=1  "+
                                 "GROUP BY Month, room) AS R1 ON R1.room = R.roomcode " +
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=2  "+
                                 "GROUP BY Month, room) AS R2 ON R2.room = R.roomcode "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=3  "+
                                 "GROUP BY Month, room) AS R3 ON R3.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=4  "+
                                 "GROUP BY Month, room) AS R4 ON R4.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=5  "+
                                 "GROUP BY Month, room) AS R5 ON R5.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=6  "+
                                 "GROUP BY Month, room) AS R6 ON R6.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=7  "+
                                 "GROUP BY Month, room) AS R7 ON R7.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=8  "+
                                 "GROUP BY Month, room) AS R8 ON R8.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=9  "+
                                 "GROUP BY Month, room) AS R9 ON R9.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=10  "+
                                 "GROUP BY Month, room) AS R10 ON R10.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=11  "+
                                 "GROUP BY Month, room) AS R11 ON R11.room = R.roomcode  "+
                 "LEFT OUTER JOIN  "+
                         "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
-                                "FROM lnguy228.lab7_reservations  "+
+                                "FROM yehlaing.lab7_reservations  "+
                                 "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=12  "+
                                 "GROUP BY Month, room) AS R12 ON R12.room = R.roomcode ";
 
