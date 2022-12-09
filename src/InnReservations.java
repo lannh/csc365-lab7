@@ -21,18 +21,19 @@ public class InnReservations {
             int demoNum = Integer.parseInt(args[0]);
 
             switch (demoNum) {
-                case 1:
-                    ir.R1();
-                    break;
+
                 case 2:
                     ir.R2();
                     break;
-//                case 2: hp.demo2(); break;
-//                case 3: hp.demo3(); break;
+                case 3:
+                    ir.R3();
+                    break;
                 case 4:
                     ir.R4();
                     break;
-//                case 5: hp.demo5(); break;
+                case 5:
+                    ir.R5();
+                    break;
                 case 6:
                     ir.R6();
                     break;
@@ -48,22 +49,290 @@ public class InnReservations {
         }
     }
 
-    private void R1() throws SQLException {
+    private void R3() throws SQLException {
 
+        // Step 1: Establish connection to RDBMS
         try (Connection conn = DriverManager.getConnection(System.getenv("HP_JDBC_URL"),
                 System.getenv("HP_JDBC_USER"),
                 System.getenv("HP_JDBC_PW"))) {
             // Step 2: Construct SQL statement
-            String sql = "SELECT * FROM yehlaing.lab7_rooms JOIN yehlaing.lab7_reservations;";
+            Scanner scanner = new Scanner(System.in);
 
-            try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
-                System.out.println(rs);
+            while (true) {
+
+                System.out.println("Modify an existing reservation");
+
+                System.out.print("Enter the code for the reservation that you want to make changes to: ");
+                String code = scanner.nextLine();
+
+                String checkCodeSql = "SELECT * FROM yehlaing.test_reservations WHERE CODE = " + code;
+
+                String room = "";
+                String oldCheckIn = "";
+                String oldCheckOut = "";
+                conn.setAutoCommit(false);
+
+                // Checks if reservation exists
+                try (Statement stmt = conn.createStatement();
+                     ResultSet rs = stmt.executeQuery(checkCodeSql)) {
+
+                    if (rs.next()) {
+                        room = rs.getString("Room");
+                        oldCheckIn = rs.getString("CheckIn");
+                        oldCheckOut = rs.getString("CheckOut");
+
+                        System.out.println("-----Reservation found-----");
+                        System.out.format("|%-10s|%-10s|%-15s|%-15s|%-10s|%-10s|%-10s|%-10s|%-10s|\n", "Code", "Room", "CheckIn", "CheckOut", "Rate", "LastName", "FirstName", "Adults", "Kids");
+                        System.out.format("|%-10s|%-10s|%-15s|%-15s|%-10s|%-10s|%-10s|%-10s|%-10s|\n", rs.getString("Code"), rs.getString("Room"), rs.getString("CheckIn"), rs.getString("CheckOut"), rs.getString("Rate"), rs.getString("LastName"), rs.getString("FirstName"), rs.getString("Adults"), rs.getString("Kids"));
+
+                    } else {
+                        System.out.println("Reservation does not exist");
+                        System.out.print("Would you like to try again? (y/n)");
+                        if (scanner.nextLine().equals("n")) {
+                            break;
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+
+                }
+
+                System.out.println("Enter the new values for any of the fields below or press enter to leave field blank");
+                // customer name
+                System.out.print("Enter Firstname: ");
+                String firstName = scanner.nextLine();
+                System.out.print("Enter Lastname: ");
+                String lastName = scanner.nextLine();
+                // customer check in checkout date
+                System.out.print("Enter the begin date (YYYY-MM-DD): ");
+                String checkIn = scanner.nextLine();
+                System.out.print("Enter the end date (YYYY-MM-DD): ");
+                String checkOut = scanner.nextLine();
+                System.out.print("Enter the number of children: ");
+                String children = scanner.nextLine();
+                System.out.print("Enter the number of adults: ");
+                String adult = scanner.nextLine();
+
+
+                // Checks if new date overlaps with existing reservations
+                if (!checkIn.equals("") || !checkOut.equals("")) {
+                    if (!checkIn.equals("")) {
+                        oldCheckIn = checkIn;
+
+                    }
+                    if (!checkOut.equals("")) {
+                        oldCheckOut = checkOut;
+                    }
+                    System.out.println(oldCheckIn);
+                    System.out.println(oldCheckOut);
+
+                    String checkDateSql = "SELECT * FROM yehlaing.test_reservations WHERE CODE <> ? AND Room = ? AND CheckIn <= ? AND CheckOut > ?";
+                    System.out.println(checkDateSql);
+
+                    try (PreparedStatement pstmt = conn.prepareStatement(checkDateSql)) {
+                        pstmt.setString(1, code);
+                        pstmt.setString(2, room);
+                        pstmt.setString(3, oldCheckOut);
+                        pstmt.setString(4, oldCheckIn);
+
+
+                        try (ResultSet rs = pstmt.executeQuery()) {
+
+                            if (rs.next()) {
+                                System.out.println("Date overlapping with existing reservation");
+                                if (scanner.nextLine().equals("n")) {
+                                    break;
+                                }
+                                else {
+                                    continue;
+                                }
+                            } else if (!rs.next()) {
+                                System.out.println("No overlapping dates found");
+                            }
+
+                        }
+                    } catch (SQLException e) {
+                        System.out.println(e);
+                        conn.rollback();
+                    }
+                }
+                String updateSql = "UPDATE yehlaing.test_reservations SET";
+                List<String> params = new ArrayList<String>();
+                List<String> values = new ArrayList<String>();
+
+                if (!firstName.equals("")) {
+                    params.add(" FirstName = ?");
+                    values.add(firstName.toUpperCase() );
+                }
+                if (!lastName.equals("")) {
+                    params.add(" LastName = ?");
+                    values.add(lastName.toUpperCase() );
+                }
+                if (!checkIn.equals("")) {
+                    params.add(" CheckIn = ?");
+                    values.add(checkIn);
+                }
+                if (!checkOut.equals("")) {
+                    params.add(" CheckOut = ?");
+                    values.add(checkOut);
+                }
+                if (!children.equals("")) {
+                    params.add(" Kids = ?");
+                    values.add(children);
+                }
+                if (!adult.equals("")) {
+                    params.add(" Adults = ?");
+                    values.add(adult);
+                }
+
+                if (params.isEmpty()) {
+                    System.out.println("No fields entered");
+                    System.out.print("Would you like to try again? (y/n)");
+                    if (scanner.nextLine().equals("n")) {
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+
+                for (int i = 0; i < params.size(); i++) {
+                    updateSql += params.get(i);
+                    if (i != params.size() - 1) {
+                        updateSql += " ,";
+                    }
+                }
+                updateSql += " WHERE Code = ?";
+
+                System.out.println(updateSql);
+
+                // Updates reservation
+                try (PreparedStatement pstmt2 = conn.prepareStatement(updateSql)) {
+                    if (!values.isEmpty()) {
+                        int i = 0;
+                        for (; i < values.size(); i++) {
+                            pstmt2.setString(i + 1, (values.get(i)));
+                        }
+                        pstmt2.setString(i + 1, code);
+                    }
+                    int rowCount = pstmt2.executeUpdate();
+                    System.out.println("-----Updated " + rowCount + " record(s)-----");
+
+                    conn.commit();
+                } catch (SQLException e) {
+                    conn.rollback();
+                    System.out.println(e);
+                }
+                System.out.println("");
+                System.out.print("Would you like to try again? (y/n)");
+                if (scanner.nextLine().equals("n")) {
+                    break;
+                }
             }
 
+        }
+
+    }
+
+    private void R5() throws SQLException {
+
+        // Step 1: Establish connection to RDBMS
+        try (Connection conn = DriverManager.getConnection(System.getenv("HP_JDBC_URL"),
+                System.getenv("HP_JDBC_USER"),
+                System.getenv("HP_JDBC_PW"))) {
+            // Step 2: Construct SQL statement
+            Scanner scanner = new Scanner(System.in);
+
+            List<String> params = new ArrayList<String>();
+            List<String> values = new ArrayList<String>();
+
+            while (true) {
+                System.out.println("Search for matching reservations");
+                System.out.println("Enter any combination of fields listed below or press enter to leave field blank");
+                System.out.println();
+                // customer name
+                System.out.print("Enter Firstname: ");
+                String firstName = scanner.nextLine();
+                System.out.print("Enter Lastname: ");
+                String lastName = scanner.nextLine();
+                System.out.print("Enter a date range (YYYY-MM-DD,YYYY-MM-DD): ");
+                String dates = scanner.nextLine();
+                System.out.print("Enter Room Code: ");
+                String roomCode = scanner.nextLine();
+                System.out.print("Enter Reservation Code: ");
+                String reservationCode = scanner.nextLine();
+
+                String detailedSql = "SELECT * FROM yehlaing.lab7_reservations JOIN yehlaing.lab7_rooms ON Room = RoomCode";
+
+                // Step 3: Start transaction
+                conn.setAutoCommit(false);
+                if (!firstName.equals("") || "any".equalsIgnoreCase(firstName)) {
+                    params.add(" FirstName LIKE ?");
+                    values.add(firstName + "%");
+                }
+                if (!lastName.equals("") || "any".equalsIgnoreCase(lastName)) {
+                    params.add(" LastName LIKE ?");
+                    values.add(lastName + "%");
+                }
+                if (!dates.equals("") || "any".equalsIgnoreCase(lastName)) {
+                    String[] date_array = dates.split(",");
+                    params.add(" CheckOut >= ? and CheckIn <= ? ");
+                    values.add(date_array[0]);
+                    values.add(date_array[1]);
+                }
+                if (!roomCode.equals("") || "any".equalsIgnoreCase(roomCode)) {
+                    params.add(" Room LIKE ?");
+                    values.add(roomCode + "%");
+                }
+                if (!reservationCode.equals("") || "any".equalsIgnoreCase(lastName)) {
+                    params.add(" CODE LIKE ?");
+                    values.add(reservationCode + "%");
+                }
+                if (!params.isEmpty()) {
+                    detailedSql += " WHERE";
+                    for (int i = 0; i < params.size(); i++) {
+                        detailedSql += params.get(i);
+                        if (i != params.size() - 1) {
+                            detailedSql += " AND";
+                        }
+                    }
+                }
+                System.out.println(detailedSql);
+
+
+                try (PreparedStatement pstmt = conn.prepareStatement(detailedSql)) {
+                    if (!values.isEmpty()) {
+                        for (int i = 0; i < values.size(); i++) {
+                            pstmt.setString(i + 1, (values.get(i)));
+                        }
+                    }
+
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        System.out.println("Matching reservations:");
+                        System.out.format("|%-10s|%-10s|%-25s|%-15s|%-15s|%-10s|%-10s|%-10s|%-10s|%-10s|\n", "Code", "Room", "RoomName", "CheckIn", "CheckOut", "Rate", "LastName", "FirstName", "Adults", "Kids");
+                        int matchCount = 0;
+                        while (rs.next()) {
+                            System.out.format("|%-10s|%-10s|%-25s|%-15s|%-15s|%-10s|%-10s|%-10s|%-10s|%-10s|\n", rs.getString("Code"), rs.getString("Room"), rs.getString("RoomName"), rs.getString("CheckIn"), rs.getString("CheckOut"), rs.getString("Rate"), rs.getString("LastName"), rs.getString("FirstName"), rs.getString("Adults"), rs.getString("Kids"));
+                            matchCount++;
+                        }
+                        System.out.format("----------------------%nFound %d match%s %n", matchCount, matchCount == 1 ? "" : "es");
+                    }
+                    conn.commit();
+                } catch (SQLException e) {
+                    conn.rollback();
+                }
+                System.out.println("");
+                System.out.print("Would you like to try again? (y/n)");
+                if (scanner.nextLine().equals("n")) {
+                    break;
+                }
+            }
 
         }
+
     }
+
 
     // Demo4 - Establish JDBC connection, execute DML query (UPDATE) using PreparedStatement / transaction
     private void R4() throws SQLException {
@@ -172,14 +441,14 @@ public class InnReservations {
         int resFound = 0;
 
         String basesql =
-                "SELECT * FROM lnguy228.lab7_rooms ";
+                "SELECT * FROM yehlaing.lab7_rooms ";
 
         String exactMatchSQL = basesql;
         if (!room.equalsIgnoreCase("any"))
             exactMatchSQL += "WHERE RoomCode = ?";
 
         if (!bedType.equalsIgnoreCase("any")) {
-            if(exactMatchSQL.endsWith("lnguy228.lab7_rooms "))
+            if(exactMatchSQL.endsWith("yehlaing.lab7_rooms "))
                 exactMatchSQL += "WHERE bedType = ?";
             else
                 exactMatchSQL += "AND bedType = ?";
@@ -209,7 +478,7 @@ public class InnReservations {
 
                     //check if there is any reservation for this current room during desired checkin-checkout dates
                     String availableDateSQL =
-                            "SELECT * FROM lnguy228.lab7_reservations " +
+                            "SELECT * FROM yehlaing.lab7_reservations " +
                                     "WHERE room = ? AND" +
                                     "(( ? < checkin AND ? > checkin) OR" +
                                     "( ? >= checkin AND ? <= checkout) OR" +
@@ -260,7 +529,7 @@ public class InnReservations {
             //find rooms that are available during the desired checkin-checkout date
             String sql1 = basesql +
                     "WHERE NOT EXISTS "+
-                           "(SELECT * FROM lnguy228.lab7_reservations " +
+                           "(SELECT * FROM yehlaing.lab7_reservations " +
                             "WHERE room = roomcode AND " +
                             "(( ? < checkin AND ? > checkin) OR " +
                             "( ? >= checkin AND ? <= checkout) OR " +
@@ -334,7 +603,7 @@ public class InnReservations {
 
                         //check if there is any reservation for this current room during desired checkin-checkout dates
                         String availableDateSQL =
-                                "SELECT * FROM lnguy228.lab7_reservations " +
+                                "SELECT * FROM yehlaing.lab7_reservations " +
                                         "WHERE room = ? AND " +
                                         "(( ? < checkin AND ? > checkin) OR " +
                                         "( ? >= checkin AND ? <= checkout) OR " +
@@ -353,7 +622,7 @@ public class InnReservations {
                                 //if the room has been booked during the desired checkin-checkout dates, consider the next available date of the room
                                 if (availableDateRs.next())
                                 {
-                                    String maxCheckoutSQL = "SELECT max(checkout) FROM lnguy228.lab7_reservations WHERE room = ?";
+                                    String maxCheckoutSQL = "SELECT max(checkout) FROM yehlaing.lab7_reservations WHERE room = ?";
                                     try (PreparedStatement pstmtMaxCheckoutSQL = conn.prepareStatement(maxCheckoutSQL)) {
                                         pstmtMaxCheckoutSQL.setString(1, roomCode);
 
@@ -422,7 +691,7 @@ public class InnReservations {
         double basePrice = 0.0;
 
         String sql =
-                "SELECT * FROM lnguy228.lab7_rooms WHERE roomcode = ?";
+                "SELECT * FROM yehlaing.lab7_rooms WHERE roomcode = ?";
         //prepare and execute sql to get the room information
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, roomCode);
@@ -465,7 +734,7 @@ public class InnReservations {
         }
 
         if (formControl.equalsIgnoreCase("yes")) {
-            String insertSql = "INSERT INTO lnguy228.lab7_reservations "+
+            String insertSql = "INSERT INTO yehlaing.lab7_reservations "+
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             conn.setAutoCommit(false);
@@ -475,7 +744,7 @@ public class InnReservations {
                 //reservationCode = max(reservationCode) from the reservations table + 1
                 long reservationCode = 0;
                 //SQL to find the max reservation code
-                String maxReservationCode = "SELECT max(code) FROM lnguy228.lab7_reservations";
+                String maxReservationCode = "SELECT max(code) FROM yehlaing.lab7_reservations";
 
                 //execute maxReservationCode
                 try (Statement maxReservationCodeStmt = conn.createStatement();
@@ -544,7 +813,7 @@ public class InnReservations {
                 diff = ChronoUnit.DAYS.between(checkinDate,checkoutDate);
 
                 //find max(maxOcc) of all rooms
-                String maxOccSql = "SELECT max(maxOcc) FROM lnguy228.lab7_rooms ";
+                String maxOccSql = "SELECT max(maxOcc) FROM yehlaing.lab7_rooms ";
                 int maxOcc = 0;
 
                 //execute maxOccSql
@@ -810,74 +1079,6 @@ public class InnReservations {
         }
     }
 
-    private void R5() throws SQLException {
-
-        System.out.println("FR5: Present a search prompt or form that allows the\n" +
-                "user to enter any combination of the fields listed below\r\n");
-
-        // Step 1: Establish connection to RDBMS
-        try (Connection conn = DriverManager.getConnection(System.getenv("HP_JDBC_URL"),
-                System.getenv("HP_JDBC_USER"),
-                System.getenv("HP_JDBC_PW"))) {
-            // Step 2: Construct SQL statement
-            Scanner scanner = new Scanner(System.in);
-
-         //   String firstName, lastName, roomCode, reservationCode, checkIn, checkOut, year, month, day;
-            String conditions = "";
-
-            System.out.print("Enter a what you want to search for: ");
-
-            // customer name
-            System.out.println("Enter Firstname: ");
-            String firstName = scanner.nextLine();
-            System.out.println("Enter Lastname: ");
-            String lastName = scanner.nextLine();
-
-            // customer check in checkout date
-            System.out.println("Enter CheckIn Date (YYYY-MM-DD): ");
-            String checkIn = scanner.nextLine();
-            System.out.println("Enter CheckOut Date (YYYY-MM-DD): ");
-            String checkOut = scanner.nextLine();
-
-            // customer room code
-            System.out.println("Enter Room Code: ");
-            String roomCode = scanner.nextLine();
-            System.out.println("Enter Reservation Code: ");
-            String reservationCode = scanner.nextLine();
-
-//            System.out.format("Until what date will %s be available (YYYY-MM-DD)? ", flavor);
-//            LocalDate availDt = LocalDate.parse(scanner.nextLine());
-//
-            String detailedSql = "SELECT * FROM lab7_reservations WHERE FirstName LIKE ? AND LastName LIKE ? AND " +
-                    "CheckIn >= ? AND CheckOut <= ? AND Room LIKE ? AND Code LIKE ?";
-
-            // Step 3: Start transaction
-            conn.setAutoCommit(false);
-
-            try (PreparedStatement pstmt = conn.prepareStatement(detailedSql)) {
-
-                // Step 4: Send SQL statement to DBMS
-                pstmt.setString(1, firstName);
-                pstmt.setString(2, lastName);
-                pstmt.setString(3, checkIn);
-                pstmt.setString(4, checkOut);
-                pstmt.setString(5, roomCode);
-                pstmt.setString(6, reservationCode);
-
-//                int rowCount = pstmt.executeUpdate();
-
-                // Step 5: Handle results
-//                System.out.format("Updated %d records for %s pastries%n", rowCount, flavor);
-
-                // Step 6: Commit or rollback transaction
-                conn.commit();
-            } catch (SQLException e) {
-                conn.rollback();
-            }
-
-        }
-        // Step 7: Close connection (handled implcitly by try-with-resources syntax)
-    }
 
 
 }
