@@ -20,12 +20,16 @@ public class InnReservations {
             int demoNum = Integer.parseInt(args[0]);
 
             switch (demoNum) {
-//                case 1: ir.R1(); break;
-//                case 2: ir.R2(); break;
+                case 1:
+                    ir.R1();
+                    break;
+//              case 2: ir.R2(); break;
                 case 3:
                     ir.R3();
                     break;
-//                case 4: ir.R4(); break;
+                case 4:
+                    ir.R4();
+                    break;
                 case 5:
                     ir.R5();
                     break;
@@ -499,40 +503,51 @@ public class InnReservations {
             // Step 4: Send SQL statement to DBMS
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
-
-                System.out.printf(" %-10s %-30s %-12s %-12s %-9s %-9s %-9s %-9s %-9s %-9s %-12s %-12s %-12s %-12s %-12s\n",
-                        "RoomCode", "RoomName", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "TotalRevenue");
-                // Step 5: Receive results
-                while (rs.next()) {
-                    String RoomCode = rs.getString("RoomCode");
-                    String RoomName = rs.getString("RoomName");
-
-                    int revenue1 = rs.getInt("January");
-                    int revenue2 = rs.getInt("February");
-                    int revenue3 = rs.getInt("March");
-                    int revenue4 = rs.getInt("April");
-                    int revenue5 = rs.getInt("May");
-                    int revenue6 = rs.getInt("June");
-                    int revenue7 = rs.getInt("July");
-                    int revenue8 = rs.getInt("August");
-                    int revenue9 = rs.getInt("September");
-                    int revenue10 = rs.getInt("October");
-                    int revenue11 = rs.getInt("November");
-                    int revenue12 = rs.getInt("December");
-                    int totalRevenue = rs.getInt("TotalRevenue");
-
-                    System.out.printf(" %-10s %-30s %-12d %-12d %-9d %-9d %-9d %-9d %-9d %-9d %-12d %-12d %-12d %-12d %-12d\n",
-                            RoomCode, RoomName,
-                            revenue1, revenue2, revenue3,
-                            revenue4, revenue5, revenue6,
-                            revenue7, revenue8, revenue9,
-                            revenue10, revenue11, revenue12, totalRevenue);
-                }
-            } catch (SQLException e) {
-                System.out.print(e);
+                System.out.println(rs);
             }
+
+
         }
     }
+
+    // Demo4 - Establish JDBC connection, execute DML query (UPDATE) using PreparedStatement / transaction
+    private void R4() throws SQLException {
+
+        try (Connection conn = DriverManager.getConnection(
+                System.getenv("HP_JDBC_URL"),
+                System.getenv("HP_JDBC_USER"),
+                System.getenv("HP_JDBC_PW"))) {
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter a reservation code: ");
+            String code = scanner.nextLine();
+
+            String updateSql = "DELETE FROM yehlaing.lab7_reservations WHERE CODE = ?";
+
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
+
+                pstmt.setInt(1, Integer.parseInt(code));
+                int rowCount = pstmt.executeUpdate();
+
+                if(rowCount > 0)
+                    System.out.printf("Reservation #%s has been canceled successfully.", code);
+                else
+                    System.out.printf("Reservation #%s can't be found. Please try again.",code);
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+            }
+            catch (NumberFormatException e) {
+                System.out.printf("Invalid Reservation Code: %s. Please try again.", code);
+                conn.rollback();
+            }
+
+        }
+    }
+
 
 
 }
