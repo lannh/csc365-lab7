@@ -1,8 +1,9 @@
 # CSC 365 Lab7
 
-#### Database for lab7 INN tables: yehlaing
-
 ### Members: Anagha Sikha, Yun Hlaing, Lan Nguyen, Xander Wallace
+
+### Database for lab7 INN tables: 
+yehlaing
 
 ### Environment Variables
 HP_JDBC_URL=jdbc:mysql://db.labthreesixfive.com/yehlaing?autoReconnect=true&useSSL=false;
