@@ -10,7 +10,23 @@ HP_JDBC_USER=yehlaing;
 HP_JDBC_PW=Fall22_CSC365-___;
 
 ### Runtime Instructions
-FR-1: 
+
+Once you are in the csc365-lab7 > src run:
+
+export CLASSPATH=$CLASSPATH:<path>mysql-connector-java-8.0.16.jar:.
+export HP_JDBC_URL=jdbc:mysql://db.labthreesixfive.com/<username>?autoReconnect=true&useSSL=false;
+export HP_JDBC_USER=<username>
+export HP_JDBC_PW=Fall22_CSC365-<password>
+
+javac InnReservations.java
+java InnReservations #
+
+FR-1: type 1 in #
+FR-2: type 2 in #
+FR-3: type 3 in #
+FR-4: type 4 in #
+FR-5: type 1 in #
+FR-6: type 1 in #
 
 #### Work Log
 Xander Wallance - FR1
