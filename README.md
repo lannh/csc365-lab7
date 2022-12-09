@@ -27,6 +27,11 @@ FR-3: type 3 in #
 FR-4: type 4 in #
 FR-5: type 1 in #
 FR-6: type 1 in #
+  
+If the terminal does not work, type the FR you want to see in the CLI arguments in the Edit Configurations.
+
+## Deficiencies
+- export HP_JDBC_URL returns blank when running in terminal, but environment variables work within the IntelliJ IDE
 
 #### Work Log
 Xander Wallance - FR1
