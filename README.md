@@ -32,11 +32,15 @@ To run the specific Functional Requirements
   
 If the terminal does not work, type the FR you want to see in the CLI arguments in the Edit Configurations.
 
-## Deficiencies
+### Deficiencies
 - export HP_JDBC_URL returns blank when running in terminal, but environment variables work within the IntelliJ IDE
 
-#### Work Log
-Xander Wallance - FR1
-Lan Nguyen - FR2, FR4, FR6
-Yun Hlaing - FR3, FR5
-Anagha Sikha - FR3, FR5
+### Work Log
+
+  Xander Wallance - FR1
+
+  Lan Nguyen - FR2, FR4, FR6
+
+  Yun Hlaing - FR3, FR5
+
+  Anagha Sikha - FR3, FR5
