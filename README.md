@@ -1,6 +1,6 @@
 # csc365-lab7
 
-## Database for lab7 INN tables: yehlaing
+#### Database for lab7 INN tables: yehlaing
 
 ### Members: Anagha Sikha, Yun Hlaing, Lan Nguyen, Xander Wallace
 
