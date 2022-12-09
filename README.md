@@ -22,6 +22,7 @@ Once you are in the csc365-lab7 > src run:
 - javac InnReservations.java
 - java InnReservations #
 
+To run the specific Functional Requirements 
 - FR-1: type 1 in #
 - FR-2: type 2 in #
 - FR-3: type 3 in #
