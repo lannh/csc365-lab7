@@ -15,7 +15,7 @@ yehlaing
 Once you are in the csc365-lab7 > src run:
 
 - export CLASSPATH=$CLASSPATH:<path>mysql-connector-java-8.0.16.jar:.
-- export HP_JDBC_URL=jdbc:mysql://db.labthreesixfive.com/<username>?autoReconnect=true&useSSL=false;
+- export HP_JDBC_URL="jdbc:mysql://db.labthreesixfive.com/<username>?autoReconnect=true&useSSL=false"
 - export HP_JDBC_USER=<username>
 - export HP_JDBC_PW=Fall22_CSC365-<password>
 
@@ -30,10 +30,6 @@ To run the specific Functional Requirements
 - FR-5: type 1 in #
 - FR-6: type 1 in #
   
-If the terminal does not work, type the FR you want to see in the CLI arguments in the Edit Configurations.
-
-### Deficiencies
-- export HP_JDBC_URL returns blank when running in terminal, but environment variables work within the IntelliJ IDE
 
 ### Work Log
 
