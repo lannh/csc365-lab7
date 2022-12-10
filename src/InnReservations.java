@@ -45,7 +45,8 @@ public class InnReservations {
             System.err.println("SQLException: " + e.getMessage());
         } catch (Exception e2) {
             System.err.println("Exception: " + e2.getMessage());
-        } finally {
+        }
+        finally {
             System.out.println("\nExiting program...");
         }
     }
@@ -125,6 +126,7 @@ public class InnReservations {
         }
     }
 
+
     private void R3() throws SQLException {
 
         // Step 1: Establish connection to RDBMS
@@ -166,7 +168,8 @@ public class InnReservations {
                         System.out.print("Would you like to try again? (y/n)");
                         if (scanner.nextLine().equals("n")) {
                             break;
-                        } else {
+                        }
+                        else {
                             continue;
                         }
                     }
@@ -218,7 +221,8 @@ public class InnReservations {
                                 System.out.println("Date overlapping with existing reservation");
                                 if (scanner.nextLine().equals("n")) {
                                     break;
-                                } else {
+                                }
+                                else {
                                     continue;
                                 }
                             } else if (!rs.next()) {
@@ -237,11 +241,11 @@ public class InnReservations {
 
                 if (!firstName.equals("")) {
                     params.add(" FirstName = ?");
-                    values.add(firstName.toUpperCase());
+                    values.add(firstName.toUpperCase() );
                 }
                 if (!lastName.equals("")) {
                     params.add(" LastName = ?");
-                    values.add(lastName.toUpperCase());
+                    values.add(lastName.toUpperCase() );
                 }
                 if (!checkIn.equals("")) {
                     params.add(" CheckIn = ?");
@@ -265,7 +269,8 @@ public class InnReservations {
                     System.out.print("Would you like to try again? (y/n)");
                     if (scanner.nextLine().equals("n")) {
                         break;
-                    } else {
+                    }
+                    else {
                         continue;
                     }
                 }
@@ -428,15 +433,16 @@ public class InnReservations {
                 pstmt.setInt(1, Integer.parseInt(code));
                 int rowCount = pstmt.executeUpdate();
 
-                if (rowCount > 0)
+                if(rowCount > 0)
                     System.out.printf("Reservation #%s has been canceled successfully.", code);
                 else
-                    System.out.printf("Reservation #%s can't be found. Please try again.", code);
+                    System.out.printf("Reservation #%s can't be found. Please try again.",code);
 
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
-            } catch (NumberFormatException e) {
+            }
+            catch (NumberFormatException e) {
                 System.out.printf("Invalid Reservation Code: %s. Please try again.", code);
                 conn.rollback();
             }
@@ -448,11 +454,11 @@ public class InnReservations {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         boolean validInput = false;
-        while (!validInput) {
-            String prompt = "Enter a " + field + " : ";
+        while(!validInput) {
+            String prompt = "Enter a "+field+" : ";
 
-            if (field.equals("room code") || field.equals("desired bed type"))
-                prompt = "Enter a " + field + " (or \"Any\" to indicate no preference): ";
+            if(field.equals("room code") || field.equals("desired bed type"))
+                prompt = "Enter a "+field+" (or \"Any\" to indicate no preference): ";
 
             System.out.print(prompt);
             input = scanner.nextLine();
@@ -463,20 +469,22 @@ public class InnReservations {
     }
 
     private boolean verifyUserInputR2(String input, String field) {
-        if (input.isEmpty()) {
+        if(input.isEmpty()) {
             System.out.println(field + " can't be empty. Please try again.");
             return false;
         }
 
         boolean checked = true;
 
-        switch (field) {
+        switch (field)
+        {
             case "check-out date (format yyyy-mm-dd)":
             case "check-in date (format yyyy-mm-dd)":
-                try {
+                try{
 
                     LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                } catch (DateTimeParseException e) {
+                }
+                catch (DateTimeParseException e){
                     System.out.println("Invalid date input: " + input + ". Correct date format: yyyy-mm-dd. Please try again.");
                     checked = false;
                 }
@@ -485,8 +493,9 @@ public class InnReservations {
             case "number of adults":
                 try {
                     Integer.parseInt(input);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid " + field + " input: " + input + ". Please try again.");
+                }
+                catch (NumberFormatException e) {
+                    System.out.println("Invalid "+field+" input: "+input+". Please try again.");
                     checked = false;
                 }
         }
@@ -517,7 +526,7 @@ public class InnReservations {
             exactMatchSQL += "WHERE RoomCode = ?";
 
         if (!bedType.equalsIgnoreCase("any")) {
-            if (exactMatchSQL.endsWith("yehlaing.lab7_rooms "))
+            if(exactMatchSQL.endsWith("yehlaing.lab7_rooms "))
                 exactMatchSQL += "WHERE bedType = ?";
             else
                 exactMatchSQL += "AND bedType = ?";
@@ -597,7 +606,7 @@ public class InnReservations {
 
             //find rooms that are available during the desired checkin-checkout date
             String sql1 = basesql +
-                    "WHERE NOT EXISTS " +
+                    "WHERE NOT EXISTS "+
                     "(SELECT * FROM yehlaing.lab7_reservations " +
                     "WHERE room = roomcode AND " +
                     "(( ? < checkin AND ? > checkin) OR " +
@@ -626,7 +635,7 @@ public class InnReservations {
 
             //find room with similar basePrice
             String sql4 = basesql;
-            if (Double.compare(exactMatchBasePrice, 0.0) != 0) {
+            if (Double.compare(exactMatchBasePrice,0.0)!=0) {
                 params.add(exactMatchBasePrice);
                 sql4 += "WHERE basePrice = ? ";
             }
@@ -640,9 +649,9 @@ public class InnReservations {
 
             // union all above sql statements
             String sql = sql1 + " UNION " + sql2 + " UNION ";
-            if (!exactMatchDecor.isEmpty())
+            if(!exactMatchDecor.isEmpty())
                 sql += sql3 + " UNION ";
-            if (Double.compare(exactMatchBasePrice, 0.0) != 0)
+            if(Double.compare(exactMatchBasePrice, 0.0)!=0)
                 sql += sql4 + " UNION ";
             sql += sql5 + " UNION " + basesql;
 
@@ -650,7 +659,7 @@ public class InnReservations {
             LocalDate checkinDate = LocalDate.parse(checkin, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             LocalDate checkoutDate = LocalDate.parse(checkout, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-            diff = ChronoUnit.DAYS.between(checkinDate, checkoutDate);
+            diff = ChronoUnit.DAYS.between(checkinDate,checkoutDate);
 
             //prepare and execute the union sql
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -661,7 +670,7 @@ public class InnReservations {
 
                 try (ResultSet rs = pstmt.executeQuery()) {
                     //looping through the result set
-                    while (resFound < 5 && rs.next()) {
+                    while (resFound<5 && rs.next()) {
                         String roomCode = rs.getString("RoomCode");
                         int maxOcc = rs.getInt("maxOcc");
                         String nextCheckin = checkin;
@@ -689,7 +698,8 @@ public class InnReservations {
 
                             try (ResultSet availableDateRs = pstmtAvailableDateSQL.executeQuery()) {
                                 //if the room has been booked during the desired checkin-checkout dates, consider the next available date of the room
-                                if (availableDateRs.next()) {
+                                if (availableDateRs.next())
+                                {
                                     String maxCheckoutSQL = "SELECT max(checkout) FROM yehlaing.lab7_reservations WHERE room = ?";
                                     try (PreparedStatement pstmtMaxCheckoutSQL = conn.prepareStatement(maxCheckoutSQL)) {
                                         pstmtMaxCheckoutSQL.setString(1, roomCode);
@@ -729,7 +739,6 @@ public class InnReservations {
 
         return resFound;
     }
-
     private long getNumberOfWeekDays(LocalDate startDate, LocalDate endDate) {
 
         Set<DayOfWeek> weekend = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
@@ -739,7 +748,6 @@ public class InnReservations {
 
         return weekDaysBetween;
     }
-
     private long getNumberOfWeekendDays(LocalDate startDate, LocalDate endDate) {
 
         Set<DayOfWeek> weekend = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
@@ -782,9 +790,9 @@ public class InnReservations {
         }
 
         System.out.println("Booking confirmation:");
-        System.out.println("Firstname, Lastname: " + firstname + ", " + lastname);
-        System.out.println("Number of adults: " + numOfAdults);
-        System.out.println("Number of children: " + numOfChild);
+        System.out.println("Firstname, Lastname: "+firstname+", "+lastname);
+        System.out.println("Number of adults: "+ numOfAdults);
+        System.out.println("Number of children: "+numOfChild);
         System.out.println("Room Information:");
         System.out.printf("\t\t%-10s %-30s %-12s [%s,  %s]\n",
                 "RoomCode", "RoomName", "BedType", "checkin", "checkout");
@@ -792,7 +800,7 @@ public class InnReservations {
                 roomCode, roomName, bedType, checkin, checkout);
         //total cost = # of weekdays * baseprice + # of weekend days * basePrice * 110%
         double total = getNumberOfWeekDays(checkin, checkout) * basePrice +
-                getNumberOfWeekendDays(checkin, checkout) * basePrice * 1.1;
+                getNumberOfWeekendDays(checkin,checkout) * basePrice * 1.1;
         System.out.printf("Total cost of stay: %.2f\n", total);
 
         Scanner scanner = new Scanner(System.in);
@@ -804,7 +812,7 @@ public class InnReservations {
         }
 
         if (formControl.equalsIgnoreCase("yes")) {
-            String insertSql = "INSERT INTO yehlaing.lab7_reservations " +
+            String insertSql = "INSERT INTO yehlaing.lab7_reservations "+
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             conn.setAutoCommit(false);
@@ -824,7 +832,7 @@ public class InnReservations {
                 }
 
                 //rate = total cost / # of nights
-                double rate = total / diff;
+                double rate = total/diff;
                 pstmtInsertSQL.setLong(1, reservationCode);
                 pstmtInsertSQL.setString(2, roomCode);
                 pstmtInsertSQL.setDate(3, java.sql.Date.valueOf(checkin));
@@ -837,13 +845,14 @@ public class InnReservations {
 
                 pstmtInsertSQL.executeUpdate();
 
-                System.out.println("Your request has been submitted successfully. Your Reservation code is " + reservationCode);
+                System.out.println("Your request has been submitted successfully. Your Reservation code is "+reservationCode);
 
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
             }
-        } else
+        }
+        else
             System.out.println("Your request has been cancelled successfully.");
 
     }
@@ -855,14 +864,14 @@ public class InnReservations {
                 System.getenv("HP_JDBC_USER"),
                 System.getenv("HP_JDBC_PW"))) {
 
-            while (true) {
+            while(true) {
                 System.out.println("Room Reservation");
 
                 System.out.println("Press Any key to continue or Q to quit the form");
 
                 Scanner scanner = new Scanner(System.in);
                 String formControl = scanner.nextLine();
-                if (formControl.equalsIgnoreCase("q"))
+                if(formControl.equalsIgnoreCase("q"))
                     break;
 
                 System.out.println("Booking information: ");
@@ -879,7 +888,7 @@ public class InnReservations {
                 LocalDate checkinDate = LocalDate.parse(checkin, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 LocalDate checkoutDate = LocalDate.parse(checkout, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-                diff = ChronoUnit.DAYS.between(checkinDate, checkoutDate);
+                diff = ChronoUnit.DAYS.between(checkinDate,checkoutDate);
 
                 //find max(maxOcc) of all rooms
                 String maxOccSql = "SELECT max(maxOcc) FROM yehlaing.lab7_rooms ";
@@ -894,40 +903,43 @@ public class InnReservations {
                 }
 
                 // if # of people > max(maxOcc), return to main menu
-                if (numOfChilds + numOfAdults > maxOcc)
+                if(numOfChilds+numOfAdults > maxOcc)
                     System.out.printf("No suitable rooms are available. Rooms with maximum occupancy can accommodate %d people.\n", maxOcc);
                 else {
                     List<String> res = new ArrayList<>();
                     List<String> resCheckin = new ArrayList<>();
 
                     //find all possible rooms
-                    int numOfOptions = findRoomsR2(conn, res, resCheckin, numOfAdults + numOfChilds, checkin, checkout, room, bedType);
+                    int numOfOptions = findRoomsR2(conn,res,resCheckin,numOfAdults+numOfChilds,checkin,checkout,room,bedType);
                     int opNum = 0;
 
                     // let customer choose 1 room
                     formControl = "";
-                    while (opNum == 0) {
+                    while (opNum==0)
+                    {
                         System.out.println("\nEnter an option # associated with the room you wish to reserve, or type Quit to return to Main Menu");
                         formControl = scanner.nextLine();
 
-                        if (formControl.equalsIgnoreCase("quit"))
+                        if(formControl.equalsIgnoreCase("quit"))
                             break;
 
                         try {
                             opNum = Integer.parseInt(formControl);
-                        } catch (NumberFormatException e) {
+                        }
+                        catch (NumberFormatException e) {
                             System.out.println("Invalid option #. Please try again.");
                         }
 
-                        if (opNum > numOfOptions || opNum <= 0) {
+                        if(opNum > numOfOptions || opNum <= 0)
+                        {
                             opNum = 0;
                             System.out.println("Invalid option #. Please try again.");
                         }
                     }
 
                     //if the a room is chosen, confirm the booking
-                    if (opNum != 0) {
-                        bookingConfirmationR2(conn, res, resCheckin, opNum - 1, numOfChilds, numOfAdults, checkin, checkout, firstname, lastname);
+                    if(opNum != 0) {
+                        bookingConfirmationR2(conn, res,resCheckin, opNum-1,numOfChilds, numOfAdults, checkin,checkout,firstname,lastname);
                     }
                 }
 
@@ -949,162 +961,162 @@ public class InnReservations {
 
             // Step 2: Construct SQL statement
             String sql =
-                    "SELECT RoomCode, RoomName, " +
-                            "round(COALESCE(R1.Revenue, 0),0) AS January, " +
-                            "round(COALESCE(R2.Revenue, 0),0) AS February, " +
-                            "round(COALESCE(R3.Revenue, 0),0) AS March, " +
-                            "round(COALESCE(R4.Revenue, 0),0) AS April, " +
-                            "round(COALESCE(R5.Revenue, 0),0) AS May, " +
-                            "round(COALESCE(R6.Revenue, 0),0) AS June, " +
-                            "round(COALESCE(R7.Revenue, 0),0) AS July, " +
-                            "round(COALESCE(R8.Revenue, 0),0) AS August, " +
-                            "round(COALESCE(R9.Revenue, 0),0) AS September, " +
-                            "round(COALESCE(R10.Revenue, 0),0) AS October, " +
-                            "round(COALESCE(R11.Revenue, 0),0) AS November, " +
-                            "round(COALESCE(R12.Revenue, 0),0) AS December, " +
-                            "round(COALESCE(R1.Revenue, 0) + COALESCE(R2.Revenue, 0) + COALESCE(R3.Revenue, 0) +  " +
-                            "COALESCE(R4.Revenue, 0) + COALESCE(R5.Revenue, 0) + COALESCE(R6.Revenue, 0) +  " +
-                            "COALESCE(R7.Revenue, 0) + COALESCE(R8.Revenue, 0) + COALESCE(R9.Revenue, 0) +  " +
-                            "COALESCE(R10.Revenue, 0) + COALESCE(R11.Revenue, 0) + COALESCE(R12.Revenue, 0),0) AS TotalRevenue " +
-                            "FROM yehlaing.lab7_rooms AS R " +
-                            "LEFT OUTER JOIN " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue " +
-                            "FROM yehlaing.lab7_reservations " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=1 " +
-                            "GROUP BY Month, room) AS R1 ON R1.room = R.roomcode " +
-                            "LEFT OUTER JOIN " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue " +
-                            "FROM yehlaing.lab7_reservations " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=2 " +
-                            "GROUP BY Month, room) AS R2 ON R2.room = R.roomcode " +
-                            "LEFT OUTER JOIN " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue " +
-                            "FROM yehlaing.lab7_reservations " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=3 " +
-                            "GROUP BY Month, room) AS R3 ON R3.room = R.roomcode " +
-                            "LEFT OUTER JOIN " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue " +
-                            "FROM yehlaing.lab7_reservations " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=4 " +
-                            "GROUP BY Month, room) AS R4 ON R4.room = R.roomcode " +
-                            "LEFT OUTER JOIN " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue " +
-                            "FROM yehlaing.lab7_reservations " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=5 " +
-                            "GROUP BY Month, room) AS R5 ON R5.room = R.roomcode " +
-                            "LEFT OUTER JOIN " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=6  " +
-                            "GROUP BY Month, room) AS R6 ON R6.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
+                    "SELECT RoomCode, RoomName, "+
+                            "round(COALESCE(R1.Revenue, 0),0) AS January, "+
+                            "round(COALESCE(R2.Revenue, 0),0) AS February, "+
+                            "round(COALESCE(R3.Revenue, 0),0) AS March, "+
+                            "round(COALESCE(R4.Revenue, 0),0) AS April, "+
+                            "round(COALESCE(R5.Revenue, 0),0) AS May, "+
+                            "round(COALESCE(R6.Revenue, 0),0) AS June, "+
+                            "round(COALESCE(R7.Revenue, 0),0) AS July, "+
+                            "round(COALESCE(R8.Revenue, 0),0) AS August, "+
+                            "round(COALESCE(R9.Revenue, 0),0) AS September, "+
+                            "round(COALESCE(R10.Revenue, 0),0) AS October, "+
+                            "round(COALESCE(R11.Revenue, 0),0) AS November, "+
+                            "round(COALESCE(R12.Revenue, 0),0) AS December, "+
+                            "round(COALESCE(R1.Revenue, 0) + COALESCE(R2.Revenue, 0) + COALESCE(R3.Revenue, 0) +  "+
+                            "COALESCE(R4.Revenue, 0) + COALESCE(R5.Revenue, 0) + COALESCE(R6.Revenue, 0) +  "+
+                            "COALESCE(R7.Revenue, 0) + COALESCE(R8.Revenue, 0) + COALESCE(R9.Revenue, 0) +  "+
+                            "COALESCE(R10.Revenue, 0) + COALESCE(R11.Revenue, 0) + COALESCE(R12.Revenue, 0),0) AS TotalRevenue "+
+                            "FROM yehlaing.lab7_rooms AS R "+
+                            "LEFT OUTER JOIN "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
+                            "FROM yehlaing.lab7_reservations "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=1 "+
+                            "GROUP BY Month, room) AS R1 ON R1.room = R.roomcode "+
+                            "LEFT OUTER JOIN "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
+                            "FROM yehlaing.lab7_reservations "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=2 "+
+                            "GROUP BY Month, room) AS R2 ON R2.room = R.roomcode "+
+                            "LEFT OUTER JOIN "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
+                            "FROM yehlaing.lab7_reservations "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=3 "+
+                            "GROUP BY Month, room) AS R3 ON R3.room = R.roomcode "+
+                            "LEFT OUTER JOIN "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
+                            "FROM yehlaing.lab7_reservations "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=4 "+
+                            "GROUP BY Month, room) AS R4 ON R4.room = R.roomcode "+
+                            "LEFT OUTER JOIN "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue "+
+                            "FROM yehlaing.lab7_reservations "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=5 "+
+                            "GROUP BY Month, room) AS R5 ON R5.room = R.roomcode "+
+                            "LEFT OUTER JOIN "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=6  "+
+                            "GROUP BY Month, room) AS R6 ON R6.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
                             "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=7 " +
-                            "GROUP BY Month, room) AS R7 ON R7.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=8  " +
-                            "GROUP BY Month, room) AS R8 ON R8.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=9  " +
-                            "GROUP BY Month, room) AS R9 ON R9.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=10  " +
-                            "GROUP BY Month, room) AS R10 ON R10.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=11  " +
-                            "GROUP BY Month, room) AS R11 ON R11.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=12  " +
-                            "GROUP BY Month, room) AS R12 ON R12.room = R.roomcode  " +
-                            "UNION  " +
-                            "SELECT  \" \" AS RoomCode, \"Totals\" AS RoomName, " +
-                            "round(COALESCE(sum(R1.Revenue),0),0) AS January, " +
-                            "round(COALESCE(sum(R2.Revenue),0),0) AS February, " +
-                            "round(COALESCE(sum(R3.Revenue),0),0) AS March, " +
-                            "round(COALESCE(sum(R4.Revenue),0),0) AS April, " +
-                            "round(COALESCE(sum(R5.Revenue),0),0) AS May, " +
-                            "round(COALESCE(sum(R6.Revenue),0),0) AS June, " +
-                            "round(COALESCE(sum(R7.Revenue),0),0) AS July, " +
-                            "round(COALESCE(sum(R8.Revenue),0),0) AS August, " +
-                            "round(COALESCE(sum(R9.Revenue),0),0) AS September, " +
-                            "round(COALESCE(sum(R10.Revenue),0),0) AS October, " +
-                            "round(COALESCE(sum(R11.Revenue),0),0) AS November, " +
-                            "round(COALESCE(sum(R12.Revenue),0),0) AS December, " +
-                            "round(COALESCE(sum(R1.Revenue),0) + COALESCE(sum(R2.Revenue),0) + COALESCE(sum(R3.Revenue),0) + " +
-                            "COALESCE(sum(R4.Revenue),0) + COALESCE(sum(R5.Revenue),0) + COALESCE(sum(R6.Revenue),0) + " +
-                            "COALESCE(sum(R7.Revenue),0) + COALESCE(sum(R8.Revenue),0) + COALESCE(sum(R9.Revenue),0) + " +
-                            "COALESCE(sum(R10.Revenue),0) + COALESCE(sum(R11.Revenue),0) + COALESCE(sum(R12.Revenue),0),0) AS TotalRevenue " +
-                            "FROM yehlaing.lab7_rooms AS R " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=1  " +
+                            "GROUP BY Month, room) AS R7 ON R7.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=8  "+
+                            "GROUP BY Month, room) AS R8 ON R8.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=9  "+
+                            "GROUP BY Month, room) AS R9 ON R9.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=10  "+
+                            "GROUP BY Month, room) AS R10 ON R10.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=11  "+
+                            "GROUP BY Month, room) AS R11 ON R11.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=12  "+
+                            "GROUP BY Month, room) AS R12 ON R12.room = R.roomcode  "+
+                            "UNION  "+
+                            "SELECT  \" \" AS RoomCode, \"Totals\" AS RoomName, "+
+                            "round(COALESCE(sum(R1.Revenue),0),0) AS January, "+
+                            "round(COALESCE(sum(R2.Revenue),0),0) AS February, "+
+                            "round(COALESCE(sum(R3.Revenue),0),0) AS March, "+
+                            "round(COALESCE(sum(R4.Revenue),0),0) AS April, "+
+                            "round(COALESCE(sum(R5.Revenue),0),0) AS May, "+
+                            "round(COALESCE(sum(R6.Revenue),0),0) AS June, "+
+                            "round(COALESCE(sum(R7.Revenue),0),0) AS July, "+
+                            "round(COALESCE(sum(R8.Revenue),0),0) AS August, "+
+                            "round(COALESCE(sum(R9.Revenue),0),0) AS September, "+
+                            "round(COALESCE(sum(R10.Revenue),0),0) AS October, "+
+                            "round(COALESCE(sum(R11.Revenue),0),0) AS November, "+
+                            "round(COALESCE(sum(R12.Revenue),0),0) AS December, "+
+                            "round(COALESCE(sum(R1.Revenue),0) + COALESCE(sum(R2.Revenue),0) + COALESCE(sum(R3.Revenue),0) + "+
+                            "COALESCE(sum(R4.Revenue),0) + COALESCE(sum(R5.Revenue),0) + COALESCE(sum(R6.Revenue),0) + "+
+                            "COALESCE(sum(R7.Revenue),0) + COALESCE(sum(R8.Revenue),0) + COALESCE(sum(R9.Revenue),0) + "+
+                            "COALESCE(sum(R10.Revenue),0) + COALESCE(sum(R11.Revenue),0) + COALESCE(sum(R12.Revenue),0),0) AS TotalRevenue "+
+                            "FROM yehlaing.lab7_rooms AS R "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=1  "+
                             "GROUP BY Month, room) AS R1 ON R1.room = R.roomcode " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=2  " +
-                            "GROUP BY Month, room) AS R2 ON R2.room = R.roomcode " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=3  " +
-                            "GROUP BY Month, room) AS R3 ON R3.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=4  " +
-                            "GROUP BY Month, room) AS R4 ON R4.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=5  " +
-                            "GROUP BY Month, room) AS R5 ON R5.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=6  " +
-                            "GROUP BY Month, room) AS R6 ON R6.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=7  " +
-                            "GROUP BY Month, room) AS R7 ON R7.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=8  " +
-                            "GROUP BY Month, room) AS R8 ON R8.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=9  " +
-                            "GROUP BY Month, room) AS R9 ON R9.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=10  " +
-                            "GROUP BY Month, room) AS R10 ON R10.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=11  " +
-                            "GROUP BY Month, room) AS R11 ON R11.room = R.roomcode  " +
-                            "LEFT OUTER JOIN  " +
-                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  " +
-                            "FROM yehlaing.lab7_reservations  " +
-                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=12  " +
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=2  "+
+                            "GROUP BY Month, room) AS R2 ON R2.room = R.roomcode "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=3  "+
+                            "GROUP BY Month, room) AS R3 ON R3.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=4  "+
+                            "GROUP BY Month, room) AS R4 ON R4.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=5  "+
+                            "GROUP BY Month, room) AS R5 ON R5.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=6  "+
+                            "GROUP BY Month, room) AS R6 ON R6.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=7  "+
+                            "GROUP BY Month, room) AS R7 ON R7.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=8  "+
+                            "GROUP BY Month, room) AS R8 ON R8.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=9  "+
+                            "GROUP BY Month, room) AS R9 ON R9.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=10  "+
+                            "GROUP BY Month, room) AS R10 ON R10.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=11  "+
+                            "GROUP BY Month, room) AS R11 ON R11.room = R.roomcode  "+
+                            "LEFT OUTER JOIN  "+
+                            "(SELECT MONTH(checkout) AS Month, room, sum(DATEDIFF(checkout,checkin)*rate) AS Revenue  "+
+                            "FROM yehlaing.lab7_reservations  "+
+                            "WHERE YEAR(CURRENT_DATE) = YEAR(checkout) AND MONTH(checkout)=12  "+
                             "GROUP BY Month, room) AS R12 ON R12.room = R.roomcode ";
 
             // Step 3: (omitted in this example) Start transaction
@@ -1112,45 +1124,39 @@ public class InnReservations {
             // Step 4: Send SQL statement to DBMS
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
+
+                System.out.printf(" %-9s %-26s %-9s %-9s %-8s %-8s %-8s %-8s %-8s %-8s %-9s %-9s %-9s %-9s %s\n",
+                        "RoomCode","RoomName","January","February","March","April","May","June","July","August","September","October","November","December","TotalRevenue");
+                // Step 5: Receive results
                 while (rs.next()) {
-                    String roomcode = rs.getString("roomname");
-                    String popScore = rs.getString("popScore");
-                    String nextAvail = rs.getString("nextAvail");
-                    String mostRecentLength = rs.getString("MostRecentLength");
+                    String RoomCode = rs.getString("RoomCode");
+                    String RoomName = rs.getString("RoomName");
 
-                    System.out.printf(" %-10s %-30s %-12s %-12s %-9s %-9s %-9s %-9s %-9s %-9s %-12s %-12s %-12s %-12s %-12s\n",
-                            "RoomCode", "RoomName", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "TotalRevenue");
-                    // Step 5: Receive results
-                    while (rs.next()) {
-                        String RoomCode = rs.getString("RoomCode");
-                        String RoomName = rs.getString("RoomName");
+                    int revenue1 = rs.getInt("January");
+                    int revenue2 = rs.getInt("February");
+                    int revenue3 = rs.getInt("March");
+                    int revenue4 = rs.getInt("April");
+                    int revenue5 = rs.getInt("May");
+                    int revenue6 = rs.getInt("June");
+                    int revenue7 = rs.getInt("July");
+                    int revenue8 = rs.getInt("August");
+                    int revenue9 = rs.getInt("September");
+                    int revenue10 = rs.getInt("October");
+                    int revenue11 = rs.getInt("November");
+                    int revenue12 = rs.getInt("December");
+                    int totalRevenue = rs.getInt("TotalRevenue");
 
-                        int revenue1 = rs.getInt("January");
-                        int revenue2 = rs.getInt("February");
-                        int revenue3 = rs.getInt("March");
-                        int revenue4 = rs.getInt("April");
-                        int revenue5 = rs.getInt("May");
-                        int revenue6 = rs.getInt("June");
-                        int revenue7 = rs.getInt("July");
-                        int revenue8 = rs.getInt("August");
-                        int revenue9 = rs.getInt("September");
-                        int revenue10 = rs.getInt("October");
-                        int revenue11 = rs.getInt("November");
-                        int revenue12 = rs.getInt("December");
-                        int totalRevenue = rs.getInt("TotalRevenue");
-
-                        System.out.printf(" %-10s %-30s %-12d %-12d %-9d %-9d %-9d %-9d %-9d %-9d %-12d %-12d %-12d %-12d %-12d\n",
-                                RoomCode, RoomName,
-                                revenue1, revenue2, revenue3,
-                                revenue4, revenue5, revenue6,
-                                revenue7, revenue8, revenue9,
-                                revenue10, revenue11, revenue12, totalRevenue);
-                    }
+                    System.out.printf(" %-9s %-26s %-9d %-9d %-8d %-8d %-8d %-8d %-8d %-8d %-9d %-9d %-9d %-9d %d\n",
+                            RoomCode,RoomName,
+                            revenue1,revenue2,revenue3,
+                            revenue4,revenue5,revenue6,
+                            revenue7,revenue8,revenue9,
+                            revenue10,revenue11,revenue12,totalRevenue);
                 }
             }
         }
-
-
     }
-}
 
+
+
+}
