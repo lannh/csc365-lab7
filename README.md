@@ -27,8 +27,8 @@ To run the specific Functional Requirements
 - FR-2: type 2 in #
 - FR-3: type 3 in #
 - FR-4: type 4 in #
-- FR-5: type 1 in #
-- FR-6: type 1 in #
+- FR-5: type 5 in #
+- FR-6: type 6 in #
   
 
 ### Work Log
