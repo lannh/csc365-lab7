@@ -21,7 +21,9 @@ public class InnReservations {
             int demoNum = Integer.parseInt(args[0]);
 
             switch (demoNum) {
-
+                case 1:
+                    ir.R1();
+                    break;
                 case 2:
                     ir.R2();
                     break;
@@ -44,7 +46,7 @@ public class InnReservations {
         } catch (Exception e2) {
             System.err.println("Exception: " + e2.getMessage());
         } finally {
-            System.out.println("Exiting program...");
+            System.out.println("\nExiting program...");
         }
     }
 
@@ -106,6 +108,8 @@ public class InnReservations {
                     "on A.roomcode = C.roomcode\n" +
                     "order by popScore desc";
 
+            System.out.format("%-30s %-10s %-15s %-10s\n", "roomcode", "popScore", "nextAvail", "mostRecentLength");
+
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
                 while (rs.next()) {
@@ -113,7 +117,6 @@ public class InnReservations {
                     String popScore = rs.getString("popScore");
                     String nextAvail = rs.getString("nextAvail");
                     String mostRecentLength = rs.getString("MostRecentLength");
-
 
                     System.out.format("%-30s %-10s %-15s %-10s\n", roomcode, popScore, nextAvail, mostRecentLength);
 
